@@ -31,16 +31,16 @@ class Note < ApplicationRecord
     utility = user.utility
 
     case utility.name
-    when "North Utility"
-      return "short"  if words <= 50
-      return "medium" if words <= 100
-      "long"
-    when "South Utility"
-      return "short"  if words <= 60
-      return "medium" if words <= 120
-      "long"
+    when 'North Utility'
+      return 'short'  if words <= 50
+      return 'medium' if words <= 100
+      'long'
+    when 'South Utility'
+      return 'short'  if words <= 60
+      return 'medium' if words <= 120
+      'long'
     else
-      "unknown"
+      'unknown'
     end
   end
 
@@ -50,10 +50,11 @@ class Note < ApplicationRecord
     return unless review?
 
     words = content.to_s.split.size
-    limit = (user.utility.name == "North Utility") ? 50 : 60
+    limit = user.utility.name == 'North Utility' ? 50 : 60
 
     if words > limit
-      errors.add(:content, "es demasiado largo para una reseña en #{user.utility.name} (máximo #{limit} palabras)")
+      errors.add(:content,
+                 "es demasiado largo para una reseña en #{user.utility.name} (máximo #{limit} palabras)")
     end
   end
 end
