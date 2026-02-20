@@ -116,7 +116,8 @@ gem 'bullet'
 gem 'versionist'
 
 # For handling requests that relies in 3rd party API calls
-gem 'async_request', git: 'https://github.com/widergy/async-requests.git', branch: 'version-0.9.2.1-training-version'
+gem 'async_request', git: 'https://github.com/widergy/async-requests.git',
+                     branch: 'version-0.9.2.1-training-version'
 
 # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator for modern
 # web app frameworks and ORMs
