@@ -15,46 +15,38 @@ class Note < ApplicationRecord
                     critique: 1 }
 
   validates :title, :content, :note_type, :user_id, presence: true
-  validate :content_length
   validate :review_max_length
 
   belongs_to :user
 
-  def self.word_count(note_id)
-    note = find(note_id)
-    count = note.content.split.size
-    Rails.logger.debug "The note has #{count} words."
+  def word_count
+    return content.split.size
+  end
+
+  def get_utility
+    return user.utility
   end
 
   def content_length
-    words = content.to_s.split.size
-    utility = user.utility
-
-    case utility.name
-    when 'North Utility'
-      return 'short'  if words <= 50
-      return 'medium' if words <= 100
-      'long'
-    when 'South Utility'
-      return 'short'  if words <= 60
-      return 'medium' if words <= 120
-      'long'
+    words = word_count()
+    utility = get_utility()
+    if utility.name == 'North Utility'
+      return utility.words_length(words)
     else
-      'unknown'
+      return utility.words_length(words)
     end
   end
 
   private
-
   def review_max_length
     return unless review?
 
-    words = content.to_s.split.size
-    limit = user.utility.name == 'North Utility' ? 50 : 60
+    words = word_count()
+    limit = user.utility.class.limit
 
     if words > limit
       errors.add(:content,
-                 "es demasiado largo para una reseña en #{user.utility.name} (máximo #{limit} palabras)")
+                 "Too long for review #{user.utility.name} (max #{limit})")
     end
   end
 end
