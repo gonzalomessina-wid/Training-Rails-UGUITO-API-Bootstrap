@@ -27,6 +27,7 @@ class Note < ApplicationRecord
   end
 
   def content_length
+    byebug
     words = content.to_s.split.size
     utility = user.utility
 
