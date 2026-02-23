@@ -29,6 +29,9 @@ class Utility < ApplicationRecord
 
   store_accessor :integration_urls, :external_api_authentication_url, :books_data_url
 
+  def words_length(words)
+  end
+
   def generate_entity_code
     return if code.present? && !code.to_i.zero?
     self.code = id
