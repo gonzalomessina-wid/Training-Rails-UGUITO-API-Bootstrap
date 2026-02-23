@@ -46,7 +46,7 @@ class Note < ApplicationRecord
 
     if words > limit
       errors.add(:content,
-                 "Too long for review #{user.utility.name} (max #{limit})")
+                 "es demasiado largo para una reseña en #{user.utility.name} (máximo #{limit} palabras)")
     end
   end
 end
