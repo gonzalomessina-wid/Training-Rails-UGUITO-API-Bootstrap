@@ -13,5 +13,4 @@ FactoryBot.define do
   trait :critique do
     note_type { :critique }
   end
-
 end
