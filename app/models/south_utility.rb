@@ -1,11 +1,11 @@
 class SouthUtility < Utility
   LIMIT = 60
 
-  def self.short_word_count
+  def short_word_count
     60
   end
 
-  def self.long_word_count
+  def long_word_count
     120
   end
 end

@@ -32,3 +32,12 @@ User.all.find_each do |user|
   random_books_amount = [1, 2, 3].sample
   FactoryBot.create_list(:book, random_books_amount, user: user, utility: user.utility)
 end
+
+#Note
+# North
+FactoryBot.create(:note, title: 'Note1', content:'First Review', note_type: :review, user_id: 1)
+FactoryBot.create(:note, title: 'Note1', content:Faker::Lorem.words(number: 100), note_type: :critique, user_id: 1)
+
+#South
+FactoryBot.create(:note, title: 'Note2', content:'Second Review', note_type: :review, user_id: 22)
+FactoryBot.create(:note, title: 'Note2', content:'Second Review', note_type: :critique, user_id: 22)
