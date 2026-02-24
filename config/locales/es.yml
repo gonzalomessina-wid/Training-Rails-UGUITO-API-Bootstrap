@@ -31,3 +31,7 @@
 
 es:
   hello: "Hola Mundo!"
+  activerecord:
+    errors:
+      models:
+        too_long: "La cantidad de palabras de content supera el maximo permitido"
