@@ -2,16 +2,16 @@ require 'rails_helper'
 
 RSpec.describe Note, type: :model do
   describe 'Associations' do
-    it { should belong_to(:user) }
+    it { is_expected.to belong_to(:user) }
   end
 
   describe 'Validations' do
-    it { should validate_presence_of(:title) }
-    it { should validate_presence_of(:content) }
-    it { should validate_presence_of(:note_type) }
-    it { should validate_presence_of(:user_id) }
+    it { is_expected.to validate_presence_of(:title) }
+    it { is_expected.to validate_presence_of(:content) }
+    it { is_expected.to validate_presence_of(:note_type) }
+    it { is_expected.to validate_presence_of(:user_id) }
 
-    describe '#review_max_length' do
+    describe '#max_length_of_content_allowed' do
       context 'when note_type is review' do
         let(:note) { build(:note, :review, content: content, user: user) }
 
@@ -20,15 +20,17 @@ RSpec.describe Note, type: :model do
 
           context 'when content is within limit (50 words)' do
             let(:content) { 'palabra ' * 50 }
+
             it { expect(note).to be_valid }
           end
 
           context 'when content exceeds limit (> 50 words)' do
             let(:content) { 'palabra ' * 51 }
+
             it 'is invalid and has error message' do
               expect(note).not_to be_valid
               expect(note.errors[:content]).to include(
-                "es demasiado largo para una reseña en North Utility (máximo 50 palabras)"
+                'La cantidad de palabras de content supera el maximo permitido'
               )
             end
           end
@@ -39,15 +41,17 @@ RSpec.describe Note, type: :model do
 
           context 'when content is within limit (60 words)' do
             let(:content) { 'palabra ' * 60 }
+
             it { expect(note).to be_valid }
           end
 
           context 'when content exceeds limit (> 60 words)' do
             let(:content) { 'palabra ' * 61 }
+
             it 'is invalid and has error message' do
               expect(note).not_to be_valid
               expect(note.errors[:content]).to include(
-                "es demasiado largo para una reseña en South Utility (máximo 60 palabras)"
+                'La cantidad de palabras de content supera el maximo permitido'
               )
             end
           end

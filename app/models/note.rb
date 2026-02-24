@@ -30,13 +30,13 @@ class Note < ApplicationRecord
   end
 
   private
+
   def max_length_of_content_allowed
     return unless validate_exceeds_limit?
 
-    errors.add(:content, I18n.t("activerecord.errors.models.too_long"))
+    errors.add(:content, I18n.t('activerecord.errors.models.too_long'))
   end
 
-  private
   def validate_exceeds_limit?
     review? && content_length != 'short'
   end
