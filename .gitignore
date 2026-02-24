@@ -53,3 +53,9 @@ coverage/*
 # Ignore log files
 spec/dummy/log/test.log
 spec/dummy/log/development.log
+
+.idea/
+*.iml
+.idea/vcs.xml
+.idea/workspace.xml
+.mcp.json
