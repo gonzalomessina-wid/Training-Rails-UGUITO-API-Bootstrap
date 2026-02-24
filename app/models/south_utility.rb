@@ -1,13 +1,11 @@
 class SouthUtility < Utility
-  @limit = 60
-  class << self
-    attr_reader :limit
+  LIMIT = 60
+
+  def self.short_word_count
+    60
   end
 
-  def words_length(words)
-    return 'short'  if words <= 60
-    return 'medium' if words <= 120
-    return 'long'
+  def self.long_word_count
+    120
   end
-
 end

@@ -58,3 +58,4 @@ spec/dummy/log/development.log
 *.iml
 .idea/vcs.xml
 .idea/workspace.xml
+.mcp.json
