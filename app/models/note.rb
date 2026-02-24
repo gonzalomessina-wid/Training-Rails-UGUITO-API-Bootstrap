@@ -20,33 +20,39 @@ class Note < ApplicationRecord
   belongs_to :user
 
   def word_count
-    return content.split.size
+    content.split.size
   end
 
-  def get_utility
-    return user.utility
-  end
+  delegate :utility, to: :user
 
   def content_length
-    words = word_count()
-    utility = get_utility()
     if utility.name == 'North Utility'
-      return utility.words_length(words)
+      'short' if word_count <= NorthUtility.short_word_count
+      if word_count > NorthUtility.short_word_count && word_count <= NorthUtility.long_word_count
+        'medium'
+      end
     else
-      return utility.words_length(words)
+      'short' if word_count <= SouthUtility.short_word_count
+      if word_count > SouthUtility.short_word_count && word_count <= SouthUtility.long_word_count
+        'medium'
+      end
     end
+    'long'
   end
 
   private
+
   def review_max_length
     return unless review?
 
-    words = word_count()
-    limit = user.utility.class.limit
-
-    if words > limit
+    if utility.name == 'North Utility'
+      if word_count > NorthUtility::LIMIT
+        errors.add(:content,
+                   "Too long for review #{user.utility.name} (max #{NorthUtility::LIMIT})")
+      end
+    elsif word_count > SouthUtility::LIMIT
       errors.add(:content,
-                 "Too long for review #{user.utility.name} (max #{limit})")
+                 "Too long for review #{user.utility.name} (max #{SouthUtility::LIMIT})")
     end
   end
 end

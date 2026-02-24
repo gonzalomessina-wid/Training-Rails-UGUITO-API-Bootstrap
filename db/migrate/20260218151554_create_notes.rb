@@ -2,7 +2,7 @@ class CreateNotes < ActiveRecord::Migration[6.1]
   def change
     create_table :notes do |t|
       t.string :title
-      t.text :content
+      t.string :content
       t.integer :note_type
 
       t.timestamps
