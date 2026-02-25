@@ -15,38 +15,29 @@ class Note < ApplicationRecord
                     critique: 1 }
 
   validates :title, :content, :note_type, :user_id, presence: true
-  validate :review_max_length
-
+  validate :max_length_of_content_allowed
+  delegate :utility, to: :user
   belongs_to :user
 
   def word_count
-    return content.split.size
-  end
-
-  def get_utility
-    return user.utility
+    content.split.size
   end
 
   def content_length
-    words = word_count()
-    utility = get_utility()
-    if utility.name == 'North Utility'
-      return utility.words_length(words)
-    else
-      return utility.words_length(words)
-    end
+    return 'short' if word_count.between?(0, utility.short_word_count)
+    return 'medium' if word_count.between?(utility.short_word_count + 1, utility.long_word_count)
+    'long'
   end
 
   private
-  def review_max_length
-    return unless review?
+  def max_length_of_content_allowed
+    return unless validate_exceeds_limit?
 
-    words = word_count()
-    limit = user.utility.class.limit
+    errors.add(:content, I18n.t("activerecord.errors.models.too_long"))
+  end
 
-    if words > limit
-      errors.add(:content,
-                 "Too long for review #{user.utility.name} (max #{limit})")
-    end
+  private
+  def validate_exceeds_limit?
+    review? && content_length != 'short'
   end
 end

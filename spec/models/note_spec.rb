@@ -6,62 +6,60 @@ RSpec.describe Note, type: :model do
   end
 
   describe 'Validations' do
-    it { is_expected.to validate_presence_of(:title) }
-    it { is_expected.to validate_presence_of(:content) }
-    it { is_expected.to validate_presence_of(:note_type) }
-    it { is_expected.to validate_presence_of(:user_id) }
-    it { is_expected.to belong_to(:user) }
+    describe 'Presence' do
+      %i[title content note_type user_id].each do |attribute|
+        it { is_expected.to validate_presence_of(attribute) }
+      end
+    end
 
     describe '#max_length_of_content_allowed' do
+      let(:user) { create(:user, utility: utility) }
+      let(:note) { build(:note, :review, content: content, user: user) }
+      let(:error_message) { I18n.t('activerecord.errors.models.too_long') }
+
       context 'when note_type is review' do
-        let(:note) { build(:note, :review, content: content, user: user) }
-
         context 'with North Utility user' do
-          let(:user) { create(:user, utility: create(:north_utility)) }
+          let(:utility) { create(:north_utility) }
 
-          context 'when content is within limit (50 words)' do
-            let(:content) { 'palabra ' * 50 }
+          context 'when content is within limit' do
+            let(:content) { Faker::Lorem.sentence(word_count: utility.short_word_count) }
 
             it { expect(note).to be_valid }
           end
 
-          context 'when content exceeds limit (> 50 words)' do
-            let(:content) { 'palabra ' * 51 }
+          context 'when content exceeds limit' do
+            let(:content) { Faker::Lorem.sentence(word_count: utility.short_word_count + 1) }
 
             it 'is invalid and has error message' do
               expect(note).not_to be_valid
-              expect(note.errors[:content]).to include(
-                'La cantidad de palabras de content supera el maximo permitido'
-              )
+              expect(note.errors[:content]).to include(error_message)
             end
           end
         end
 
         context 'with South Utility user' do
-          let(:user) { create(:user, utility: create(:south_utility)) }
+          let(:utility) { create(:south_utility) }
 
-          context 'when content is within limit (60 words)' do
-            let(:content) { 'palabra ' * 60 }
+          context 'when content is within limit' do
+            let(:content) { Faker::Lorem.sentence(word_count: utility.short_word_count) }
 
             it { expect(note).to be_valid }
           end
 
-          context 'when content exceeds limit (> 60 words)' do
-            let(:content) { 'palabra ' * 61 }
+          context 'when content exceeds limit' do
+            let(:content) { Faker::Lorem.sentence(word_count: utility.short_word_count + 1) }
 
             it 'is invalid and has error message' do
               expect(note).not_to be_valid
-              expect(note.errors[:content]).to include(
-                'La cantidad de palabras de content supera el maximo permitido'
-              )
+              expect(note.errors[:content]).to include(error_message)
             end
           end
         end
       end
 
       context 'when note_type is not review' do
-        let(:user) { create(:user, utility: create(:north_utility)) }
-        let(:note) { build(:note, :critique, content: 'palabra ' * 100, user: user) }
+        let(:utility) { create(:north_utility) }
+        let(:note) { build(:note, :critique, content: Faker::Lorem.sentence(word_count: 100), user: user) }
 
         it 'is valid even if it exceeds the review limit' do
           expect(note).to be_valid
@@ -70,48 +68,51 @@ RSpec.describe Note, type: :model do
     end
   end
 
+  describe '#word_count' do
+    subject { note.word_count }
+
+    let(:note) { build(:note, content: 'uno dos tres') }
+
+    it { is_expected.to eq(3) }
+  end
+
   describe '#content_length' do
-    let(:user) { create(:user, utility: create(:north_utility)) }
+    let(:user) { create(:user, utility: utility) }
     let(:note) { build(:note, user: user) }
 
-    context 'with North Utility user' do
-      it "returns 'short' for up to 50 words" do
-        note.content = 'palabra ' * 50
+    shared_examples 'content length classification' do
+      it "returns 'short' for up to short_word_count words" do
+        note.content = Faker::Lorem.sentence(word_count: utility.short_word_count)
         expect(note.content_length).to eq('short')
       end
 
-      it "returns 'medium' for 51 to 100 words" do
-        note.content = 'palabra ' * 51
-        expect(note.content_length).to eq('medium')
-        note.content = 'palabra ' * 100
+      it "returns 'medium' for boundary of medium length" do
+        note.content = Faker::Lorem.sentence(word_count: utility.short_word_count + 1)
         expect(note.content_length).to eq('medium')
       end
 
-      it "returns 'long' for more than 100 words" do
-        note.content = 'palabra ' * 101
+      it "returns 'medium' for upper limit of medium length" do
+        note.content = Faker::Lorem.sentence(word_count: utility.long_word_count)
+        expect(note.content_length).to eq('medium')
+      end
+
+      it "returns 'long' for more than long_word_count words" do
+        note.content = Faker::Lorem.sentence(word_count: utility.long_word_count + 1)
         expect(note.content_length).to eq('long')
       end
+    end
+
+    context 'with North Utility user' do
+      let(:utility) { create(:north_utility) }
+
+      include_examples 'content length classification'
     end
 
     context 'with South Utility user' do
-      let(:user) { create(:user, utility: create(:south_utility)) }
+      let(:utility) { create(:south_utility) }
 
-      it "returns 'short' for up to 60 words" do
-        note.content = 'palabra ' * 60
-        expect(note.content_length).to eq('short')
-      end
-
-      it "returns 'medium' for 61 to 120 words" do
-        note.content = 'palabra ' * 61
-        expect(note.content_length).to eq('medium')
-        note.content = 'palabra ' * 120
-        expect(note.content_length).to eq('medium')
-      end
-
-      it "returns 'long' for more than 120 words" do
-        note.content = 'palabra ' * 121
-        expect(note.content_length).to eq('long')
-      end
+      include_examples 'content length classification'
     end
   end
 end
+
