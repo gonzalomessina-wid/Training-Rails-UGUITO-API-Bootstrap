@@ -10,6 +10,7 @@ RSpec.describe Note, type: :model do
     it { is_expected.to validate_presence_of(:content) }
     it { is_expected.to validate_presence_of(:note_type) }
     it { is_expected.to validate_presence_of(:user_id) }
+    it { is_expected.to belong_to(:user) }
 
     describe '#max_length_of_content_allowed' do
       context 'when note_type is review' do
