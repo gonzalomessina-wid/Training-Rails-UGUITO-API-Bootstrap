@@ -1,18 +1,38 @@
 module Api
   module V1
     class NotesController < ApplicationController
-
       def index
-        notes = Note.all
-        notes = notes.where(content: params[:filter]) if params[:filter].present?
-        notes = notes.order(params[:order]) if params[:order].present?
-        render json: notes, status: :ok
+        render json: notes_filtered, status: :ok, each_serializer: IndexNoteSerializer
       end
 
       def show
-        render json: Note.find(params[:id]), status: :ok
+        render json: show_note, status: :ok, serializer: ShowNoteSerializer
       end
 
+      private
+
+      def notes
+        Note.all
+      end
+
+      def notes_filtered
+        notes.where(filtering_params)
+             .order(created_at: order_params)
+             .page(params[:page])
+             .per(params[:page_size])
+      end
+
+      def filtering_params
+        params.permit(:note_type)
+      end
+
+      def order_params
+        %w[asc desc].include?(params[:order]) ? params[:order] : :desc
+      end
+
+      def show_note
+        notes.find(params.require(:id))
+      end
     end
   end
 end
