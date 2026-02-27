@@ -1,38 +1,49 @@
 module Api
   module V1
     class NotesController < ApplicationController
+      before_action :validate_type_param, only: [:index]
+      before_action :validate_order_param, only: [:index]
+
       def index
-        render json: notes_filtered, status: :ok, each_serializer: IndexNoteSerializer
+        render json: response_notes_index, status: :ok
       end
 
       def show
-        render json: show_note, status: :ok, serializer: ShowNoteSerializer
+        render json: Note.find(params.require(:id)), status: :ok
       end
 
       private
 
-      def notes
-        Note.all
-      end
-
       def notes_filtered
-        notes.where(filtering_params)
-             .order(created_at: order_params)
-             .page(params[:page])
-             .per(params[:page_size])
+        Note.where(params.permit(:note_type))
       end
 
-      def filtering_params
-        params.permit(:note_type)
+      def order_notes
+        notes_filtered.order(created_at: params[:order] || :desc)
       end
 
-      def order_params
-        %w[asc desc].include?(params[:order]) ? params[:order] : :desc
+      def response_notes_index
+        order_notes.page(params[:page]).per(params[:page_size])
       end
 
-      def show_note
-        notes.find(params.require(:id))
+      def validate_type_param
+        allowed_types = %w[review critique]
+        if params[:note_type] && !allowed_types.include?(params[:note_type].to_s)
+          render_error("Invalid type parameter. Use 'review' or 'critique'")
+        end
       end
+
+      def validate_order_param
+        allowed_types = %w[asc desc]
+        if params[:order] && !allowed_types.include?(params[:order].to_s)
+          render_error("Invalid type parameter. Use 'asc' or 'desc'")
+        end
+      end
+
+      def render_error(message)
+        render json: { error: message }, status: :bad_request
+      end
+
     end
   end
 end
