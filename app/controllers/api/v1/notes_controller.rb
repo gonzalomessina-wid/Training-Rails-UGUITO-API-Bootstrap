@@ -1,21 +1,23 @@
 module Api
   module V1
     class NotesController < ApplicationController
+      before_action :authenticate_user!
       before_action :validate_type_param, only: [:index]
       before_action :validate_order_param, only: [:index]
+      before_action :set_note, only: [:show]
 
       def index
         render json: response_notes_index, status: :ok, each_serializer: NoteIndexSerializer
       end
 
       def show
-        render json: Note.find(show_params[:id]), status: :ok, serializer: NoteShowSerializer
+        render json: @note, status: :ok, serializer: NoteDetailedSerializer
       end
 
       private
-      def show_params
-        params.require(:id)
-        params.permit(:id)
+
+      def set_note
+        @note = Note.find(params[:id])
       end
 
       def notes_filtered
@@ -31,15 +33,14 @@ module Api
       end
 
       def validate_type_param
-        allowed_types = %w[review critique]
-        if params[:note_type] && !allowed_types.include?(params[:note_type].to_s)
+        if params[:note_type] && !Note.note_types.keys.include?(params[:note_type])
           render_error(I18n.t('activerecord.errors.controller.note.note_type_param'))
         end
       end
 
       def validate_order_param
         allowed_types = %w[asc desc]
-        if params[:order] && !allowed_types.include?(params[:order].to_s)
+        if params[:order] && !allowed_types.include?(params[:order])
           render_error(I18n.t('activerecord.errors.controller.note.order_params'))
         end
       end
@@ -47,7 +48,6 @@ module Api
       def render_error(message)
         render json: { error: message }, status: :bad_request
       end
-
     end
   end
 end
