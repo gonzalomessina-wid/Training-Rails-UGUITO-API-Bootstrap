@@ -37,5 +37,5 @@ es:
         too_long: "La cantidad de palabras de content supera el maximo permitido"
       controller:
         note:
-          order_params: "Parametro invalido. Usar 'asc' o 'desc'"
-          note_type_param: "Parametro invalido. Usar 'review' o 'critique'"
+          order_params: "Parametro de orden invalido"
+          note_type_param: "Parametro de tipo de nota invalido"
