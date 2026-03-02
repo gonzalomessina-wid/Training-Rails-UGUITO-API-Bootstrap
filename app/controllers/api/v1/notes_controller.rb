@@ -11,13 +11,13 @@ module Api
       end
 
       def show
-        render json: @note, status: :ok, serializer: NoteDetailedSerializer
+        render json: set_note, status: :ok, serializer: NoteDetailedSerializer
       end
 
       private
 
       def set_note
-        @note = Note.find(params[:id])
+        Note.find(params[:id])
       end
 
       def notes_filtered
