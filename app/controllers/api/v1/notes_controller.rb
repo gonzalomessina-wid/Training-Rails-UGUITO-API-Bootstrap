@@ -14,6 +14,15 @@ module Api
         render json: @note, status: :ok, serializer: NoteDetailedSerializer
       end
 
+      def create
+        if Note.save
+          render json: @note, status: :created, serializer: NoteShowSerializer
+        else
+          # Si falla (ej. validación de palabras), devolvemos los errores
+          render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def set_note
