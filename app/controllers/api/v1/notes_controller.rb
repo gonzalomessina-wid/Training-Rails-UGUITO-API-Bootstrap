@@ -1,6 +1,7 @@
 module Api
   module V1
     class NotesController < ApplicationController
+      before_action :authenticate_user!
       before_action :validate_type_param, only: [:index]
       before_action :validate_order_param, only: [:index]
 
