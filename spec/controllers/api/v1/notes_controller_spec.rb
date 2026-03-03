@@ -173,8 +173,8 @@ describe Api::V1::NotesController, type: :controller do
           expect(note.user).to eq(user)
         end
 
-        it 'responds with 204 status' do
-          expect(response).to have_http_status(:no_content)
+        it 'responds with 201 status' do
+          expect(response).to have_http_status(:created)
         end
       end
 
@@ -188,8 +188,8 @@ describe Api::V1::NotesController, type: :controller do
           expect(Note.count).to eq(1)
         end
 
-        it 'responds with 204 status' do
-          expect(response).to have_http_status(:no_content)
+        it 'responds with 201 status' do
+          expect(response).to have_http_status(:created)
         end
       end
 

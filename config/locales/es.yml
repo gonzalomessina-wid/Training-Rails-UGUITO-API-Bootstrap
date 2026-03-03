@@ -39,3 +39,6 @@ es:
         note:
           order_params: "Parametro de orden invalido"
           note_type_param: "Parametro de tipo de nota invalido"
+  controller:
+    create:
+      success: "Nota creada con exito"

@@ -21,7 +21,7 @@ module Api
       private
 
       def create_method
-        Note.create!(note_create_params)
+        render json: { message: I18n.t('controller.create.success') }, status: :created if Note.create!(note_create_params)
       rescue ActiveRecord::RecordInvalid => e
         raise Exceptions::InvalidParameterError, e.record.errors.full_messages.join(', ')
       end

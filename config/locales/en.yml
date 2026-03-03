@@ -39,4 +39,6 @@ en:
         note:
           order_params: "Invalid order parameter. Use 'asc' or 'desc'"
           note_type_param: "Invalid type parameter. Use 'review' or 'critique'"
-
+  controller:
+    create:
+      success: "Note successfully created"
