@@ -41,6 +41,12 @@ class ApplicationController < ActionController::Base
     resource.errors.empty? ? resource_created(resource) : validation_error(resource)
   end
 
+  def render_error(key, message: key.to_s, meta: nil, status: :bad_request)
+    error_body = { message: message }
+    error_body[:meta] = meta if meta
+    render json: { errors: [error_body] }, status: status
+  end
+
   def resource_created(resource)
     render json: resource, status: :created
   end
