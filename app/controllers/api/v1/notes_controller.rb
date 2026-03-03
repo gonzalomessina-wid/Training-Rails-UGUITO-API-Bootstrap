@@ -11,22 +11,28 @@ module Api
       end
 
       def show
-        render json: @note, status: :ok, serializer: NoteDetailedSerializer
+        render json: set_note, status: :ok, serializer: NoteDetailedSerializer
       end
 
       def create
-        if Note.save
-          render json: @note, status: :created, serializer: NoteShowSerializer
-        else
-          # Si falla (ej. validación de palabras), devolvemos los errores
-          render json: { errors: @note.errors.full_messages }, status: :unprocessable_entity
-        end
+        create_method
       end
 
       private
+      def create_method
+        Note.create!(note_create_params)
+        rescue ActiveRecord::RecordInvalid => e
+         raise Exceptions::InvalidParameterError.new(e.record.errors.full_messages.join(', '))
+      end
+
+      def note_create_params
+        params.require(:note)
+              .permit(:title, :note_type, :content)
+              .merge(user: current_user)
+      end
 
       def set_note
-        @note = Note.find(params[:id])
+        Note.find(params[:id])
       end
 
       def notes_filtered
