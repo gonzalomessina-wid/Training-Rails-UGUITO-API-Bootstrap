@@ -4,10 +4,8 @@ ActiveAdmin.register SouthUtility do
   filter :created_at
   filter :updated_at
 
-  permit_params = %i[
-    name code base_url external_api_key external_api_secret
-    external_api_authentication_url books_data_url
-  ]
+  permit_params :name, :code, :base_url, :external_api_key, :external_api_secret,
+                :external_api_authentication_url, :books_data_url, :notes_data_url
 
   member_action :copy, method: :get do
     @south_utility = resource.dup
@@ -17,12 +15,6 @@ ActiveAdmin.register SouthUtility do
   action_item :copy, only: :show do
     link_to(I18n.t('active_admin.clone_model', model: 'SouthUtility'),
             copy_admin_north_utility_path(id: resource.id))
-  end
-
-  controller do
-    define_method :permitted_params do
-      params.permit(active_admin_namespace.permitted_params, south_utility: permit_params)
-    end
   end
 
   index do
@@ -47,6 +39,7 @@ ActiveAdmin.register SouthUtility do
       f.input :external_api_secret
       f.input :external_api_authentication_url, as: :url
       f.input :books_data_url, as: :url
+      f.input :notes_data_url, as: :url
       f.actions
     end
   end
