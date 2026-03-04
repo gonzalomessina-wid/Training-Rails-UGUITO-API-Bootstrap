@@ -18,6 +18,11 @@ module Api
         create_method
       end
 
+      def index_async
+        response = execute_async(RetrieveNotesWorker, current_user.id, index_async_params)
+        async_custom_response(response)
+      end
+
       private
 
       def create_method
@@ -60,6 +65,10 @@ module Api
         if params[:order] && !allowed_types.include?(params[:order])
           render json: { error: I18n.t('activerecord.errors.controller.note.order_params') }, status: :bad_request
         end
+      end
+
+      def index_async_params
+        { author: params.require(:author) }
       end
     end
   end
